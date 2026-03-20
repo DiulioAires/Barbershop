@@ -1,10 +1,15 @@
 import Search from "../_components/Search";
+import { db } from "../lib/prisma";
 import BookingItem from "../_components/booking-item";
 import Header from "../_components/header";
-import { ptBR } from "date-fns/locale";
-import { format } from "date-fns";
+import { ptBR } from "date-fns/locale"; //data com local correto
+import { format } from "date-fns"; //adiciona data dinamica
 
-export default function Home() {
+export default async function Home() {
+
+  //chamar prisma e pegar barbearias e agendamento para mostrar na tela
+  const barbershops = await db.barbershop.findMany({});
+
   return (
     <div>
       <Header />
