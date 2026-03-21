@@ -2,6 +2,7 @@ import Search from "../_components/Search";
 import { db } from "../lib/prisma";
 import BookingItem from "../_components/booking-item";
 import Header from "../_components/header";
+import BarberShopItem from "../_components/barbershop-item";
 import { ptBR } from "date-fns/locale"; //data com local correto
 import { format } from "date-fns"; //adiciona data dinamica
 
@@ -29,8 +30,24 @@ export default async function Home() {
         <h2 className="text-xs uppercase text-gray-400 font-bold mb-3">Agendamentos</h2>
         <BookingItem />
       </div>
+      
+      
+      <div className="mt-6">
+        <h2 className="text-xs uppercase px-5 text-gray-400 font-bold mb-3">Recomendados</h2>
+        
+
+        <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden px-5">
+           {barbershops.map((barbershop) => (
+          <BarberShopItem key={barbershop.id} barbershop={barbershop} />
+
+           ))}
+        </div>
+
+
+      </div>
+
+
 
     </div>
   );
 }
-
