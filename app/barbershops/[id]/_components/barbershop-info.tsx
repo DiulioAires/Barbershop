@@ -4,6 +4,8 @@ import { ChevronLeftIcon, MenuIcon, MapPinIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/app/_components/ui/button";
 import { useRouter } from "next/navigation";
+import SideMenu from "@/app/_components/side-menu";
+import { Sheet, SheetTrigger, SheetContent } from "@/app/_components/ui/sheet";
 
 interface BarbershopInfoProps {
     barbershop: Barbershop;
@@ -11,9 +13,9 @@ interface BarbershopInfoProps {
 
 const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
     const router = useRouter();
-    
+
     const handleBackClick = () => {
-    
+
         router.back()
     };
 
@@ -24,9 +26,16 @@ const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
                 <ChevronLeftIcon />
             </Button>
 
-            <Button onClick={handleBackClick} size="icon" variant="secondary" className="z-50 absolute top-4 right-4">
+            <Sheet>
+                <SheetTrigger asChild>
+                <Button onClick={handleBackClick} size="icon" variant="secondary" className="z-50 absolute top-4 right-4">
                 <MenuIcon />
             </Button>
+                </SheetTrigger>
+                <SheetContent className="p-0">
+                    <SideMenu />
+                </SheetContent>
+            </Sheet>
 
             <Image src={barbershop.imageUrl}
                 fill
