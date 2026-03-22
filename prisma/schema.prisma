@@ -3,8 +3,6 @@
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
-
-
 // prisma/schema.prisma
 
 generator client {
@@ -16,42 +14,85 @@ datasource db {
 }
 
 model User {
-  id   String @id @default(uuid()) //primary key
-  NAME String
-  bookings Booking[] // Define the relation to Booking
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  bookings      Booking[] // Define the relation to Booking
+
+  @@map("users")
 }
 
-
 model Barbershop {
-  id   String @id @default(uuid())
-  NAME String
-  address String
+  id       String    @id @default(uuid())
+  NAME     String
+  address  String
   imageUrl String
   services Service[] // Define the relation to Service
   bookings Booking[] // Define the relation to Booking
 }
 
-
 model Service {
-  id            String    @id @default(uuid())
-  NAME          String
-  price         Decimal   @db.Decimal(10, 2)
-  description   String
-  barbershopId  String
-  barbershop    Barbershop @relation(fields: [barbershopId], references: [id])
-  imageUrl      String    // Add an image URL field for the service
-  bookings      Booking[]
-
+  id           String     @id @default(uuid())
+  NAME         String
+  price        Decimal    @db.Decimal(10, 2)
+  description  String
+  barbershopId String
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+  imageUrl     String // Add an image URL field for the service
+  bookings     Booking[]
 }
 
 model Booking {
-  id String @id @default(uuid())
-  user User @relation(fields: [userId], references: [id]) // Define the relation to User
-  userId String
-  service Service @relation(fields: [serviceId], references: [id]) // Define the relation to Service
-  serviceId String
-  date DateTime
-  barbershop Barbershop @relation(fields: [barbershopId], references: [id]) // Define the relation to Barbershop
+  id           String     @id @default(uuid())
+  user         User       @relation(fields: [userId], references: [id]) // Define the relation to User
+  userId       String
+  service      Service    @relation(fields: [serviceId], references: [id]) // Define the relation to Service
+  serviceId    String
+  date         DateTime
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id]) // Define the relation to Barbershop
   barbershopId String
-  status String
+  status       String
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }
