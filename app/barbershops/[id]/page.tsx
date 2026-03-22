@@ -1,5 +1,7 @@
 import { db } from "@/app/lib/prisma"; // Se der erro aqui ainda, veja a nota abaixo
 import BarbershopInfo from "./_components/barbershop-info";
+import ServiceItem from "./_components/service-items";
+
 
 
 interface BarbershopDetailsPageProps {
@@ -18,8 +20,12 @@ const BarbershopDetailsPage = async ({ params }: BarbershopDetailsPageProps) => 
 
 
   const barbershop = await db.barbershop.findUnique({
+   
     where: {
       id: id,
+    },
+      include: {
+      services: true,
     },
   });
 
@@ -27,8 +33,23 @@ const BarbershopDetailsPage = async ({ params }: BarbershopDetailsPageProps) => 
     return null // to DO: redirecionar para home page
   }
 
+  // Extraímos os serviços para não enviar os "Objetos Decimal" para o Client Component
+  const { services, ...barbershopData } = barbershop;
+
   return ( 
-    <BarbershopInfo barbershop={barbershop} />
+   <div className="">
+    
+    <BarbershopInfo barbershop={barbershopData}/>
+   
+
+    <div className="px-5 flex flex-col py-6 gap-4">
+       {services.map((service) => (
+      <ServiceItem key={service.id} service={service} />
+    ))}
+    </div>
+
+   
+   </div>
   );
     
   
