@@ -3,25 +3,27 @@
 import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
-import { Service } from "@prisma/client";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
+import { Barbershop, Service } from "@prisma/client";
 import { ptBR } from "date-fns/locale";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
+import { format } from "date-fns";
 
 
 
 interface ServiceItemProps {
     service: Service;
+    barbershop: Barbershop;
     isAuthenticated: boolean;
 }
 
-const ServiceItem = ({ service, isAuthenticated }: ServiceItemProps) => {
+const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps) => {
 
 
-    const [date, setDate] = useState<Date | undefined>(new Date());
+    const [date, setDate] = useState<Date | undefined>(undefined);
     const handleBookingClick = () => {
         if (!isAuthenticated) {
             signIn('google');
@@ -32,17 +34,17 @@ const ServiceItem = ({ service, isAuthenticated }: ServiceItemProps) => {
     const timeList = useMemo(() => {
 
         return date ? generateDayTimeList(date) : [];
-     }, [date])
-    
-     const [hour, setHour] = useState<string | undefined>();
-    
-     const handleDateClick = (date  : Date | undefined ) => {
+    }, [date])
+
+    const [hour, setHour] = useState<string | undefined>();
+
+    const handleDateClick = (date: Date | undefined) => {
         setDate(date)
         setHour(undefined)
     }
-    
-    
-    
+
+
+
     const handleHourClick = (time: string) => {
         setHour(time)
 
@@ -77,51 +79,90 @@ const ServiceItem = ({ service, isAuthenticated }: ServiceItemProps) => {
                                 </SheetTrigger>
 
 
-                                <SheetContent className="p-0">
-                                    <SheetHeader className="text-lef px-5 py-6 border-b border-solid border-secondary">
-                                        <SheetTitle>
-                                            Fazer reserva
-                                        </SheetTitle>
+                                <SheetContent className="p-0 flex flex-col h-full">
+                                    <SheetHeader className="text-left px-5 py-4 border-b border-solid border-secondary">
+                                        <SheetTitle>Fazer reserva</SheetTitle>
                                     </SheetHeader>
 
+                                    {/* Área com scroll */}
+                                    <div className="flex-1 overflow-y-auto">
+                                        <Calendar
+                                            mode="single"
+                                            selected={date}
+                                            onSelect={handleDateClick}
+                                            className="px-2 w-full"
+                                            disabled={{ before: new Date() }}
+                                            locale={ptBR}
+                                            classNames={{
+                                                month: "flex w-full flex-col",
+                                                table: "w-full border-collapse space-y-1",
+                                                head_row: "flex justify-between w-full",
+                                                row: "flex justify-between w-full mt-2",
+                                                cell: "text-center w-full text-sm p-0 relative [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                                                day: "w-full h-9 p-0 font-normal aria-selected:opacity-100",
+                                                day_today: "bg-transparent text-white font-normal border border-primary rounded-md", // 👈 aqui
+                                                caption: "flex justify-center pt-0 relative items-center w-full",
+                                                caption_label: "text-sm font-medium capitalize",
+                                            }}
+                                        />
 
+                                        {date && (
+                                            <div className="flex overflow-x-auto flex-nowrap px-3 gap-3 [&::-webkit-scrollbar]:hidden py-6 border-t border-solid border-secondary">
+                                                {timeList.map((time) => (
+                                                    <Button
+                                                        onClick={() => handleHourClick(time)}
+                                                        variant={hour === time ? "default" : "outline"}
+                                                        className="rounded-full shrink-0"
+                                                        key={time}
+                                                    >
+                                                        {time}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        )}
 
-                                    <Calendar
+                                        <div className="py-6 px-5 border-t border-solid border-secondary">
+                                            <Card>
+                                                <CardContent className="p-3 gap-3 flex flex-col">
+                                                    <div className="flex justify-between">
+                                                        <h2 className="font-bold">{service.NAME}</h2>
+                                                        <h3 className="font-bold">
+                                                            {Intl.NumberFormat("pt-BR", {
+                                                                style: "currency",
+                                                                currency: "BRL",
+                                                            }).format(Number(service.price.toString()))}
+                                                        </h3>
+                                                    </div>
 
-                                        mode="single"
-                                        selected={date}
-                                        onSelect={handleDateClick}
-                                        className="w-full mt-6"
-                                        disabled={{ before: new Date() }}
-                                        locale={ptBR}
-                                        classNames={{
-                                            weekday: "w-full  text-center font-normal text-muted-foreground capitalize",
-                                            day: "w-full  text-center font-normal text-muted-foreground",
-                                            nav_button_next: "w-8 h-8",
-                                            nav_button_prev: "w-8 h-8",
-                                            caption_label: "capitalize"
-                                        }}
+                                                    {date && (
+                                                        <div className="flex justify-between">
+                                                            <h3 className="text-gray-400 text-sm">Data</h3>
+                                                            <h4 className="text-sm">{format(date, "dd 'de' MMMM", { locale: ptBR })}</h4>
+                                                        </div>
+                                                    )}
 
-                                    />
+                                                    {hour && (
+                                                        <div className="flex justify-between">
+                                                            <h3 className="text-gray-400 text-sm">Horário</h3>
+                                                            <h4 className="text-sm">{hour}</h4>
+                                                        </div>
+                                                    )}
 
-
-                                    {date && (
-
-                                        <div className=" flex overflow-x-auto gap-3 [&::-webkit-scrollbar]:hidden py-6 px-5 border-y border-solid border-secondary">
-
-                                            {timeList.map((time) => (
-                                                <Button onClick={() => { handleHourClick(time) }}
-                                                    variant={hour === time ? "default" : "outline"}
-                                                    className="rounded-full"
-                                                    key={time}>
-                                                    {time}
-                                                </Button>
-                                            ))}
+                                                    <div className="flex justify-between">
+                                                        <h3 className="text-gray-400 text-sm">Barbearia</h3>
+                                                        <h4 className="text-sm">{barbershop.NAME}</h4>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
                                         </div>
+                                    </div>
 
 
-                                    )}
-
+                                    <SheetFooter className="p-5 border-t border-solid border-secondary">
+                                        <Button className="w-full" disabled={!date || !hour}>
+                                            Confirmar reserva
+                                        </Button>
+                                    </SheetFooter>
                                 </SheetContent>
                             </Sheet>
 
