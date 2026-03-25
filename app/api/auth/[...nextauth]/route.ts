@@ -3,6 +3,7 @@ import { Adapter } from "next-auth/adapters"
 import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/app/lib/prisma"
+import { se } from "date-fns/locale"
 
 export const authOptions: AuthOptions = {
 
@@ -16,6 +17,19 @@ export const authOptions: AuthOptions = {
     ),
 
     ],
+
+    callbacks: {
+        async session({ session, user }) {
+            session.user = {...session.user, id: user.id} as {
+                id: string;
+                name: string;
+                email: string;
+                
+            };
+            return session;
+        }
+    }
+
 
 };
 

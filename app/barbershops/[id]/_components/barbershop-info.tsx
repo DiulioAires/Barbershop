@@ -40,14 +40,14 @@ const BarbershopInfo = ({ barbershop }: BarbershopInfoProps) => {
 
             <Image src={barbershop.imageUrl}
                 fill
-                alt={barbershop.NAME}
+                alt={barbershop.name}
                 style={{ objectFit: "cover" }}
                 className="opacity-75"
             />
         </div>
 
         <div className="px-5 pt-3 pb-6 border-b border-solid border-secondary">
-            <h1 className="text-xl font-bold"> {barbershop.NAME}</h1>
+            <h1 className="text-xl font-bold"> {barbershop.name}</h1>
             <div className="flex items-center gap-1 mt-2">
                 <MapPinIcon className="text-primary " size={18} />
                 <p className="text-sm">{barbershop.address}</p>

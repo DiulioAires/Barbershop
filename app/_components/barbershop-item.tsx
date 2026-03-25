@@ -47,12 +47,12 @@ const BarbershopItem = ({ barbershop }: BarbershopItemProps) => {
                     }}
 
                     src={barbershop.imageUrl}
-                    alt={barbershop.NAME}
+                    alt={barbershop.name}
                     fill
                 />
               </div>
                 <div className="px-2">
-                    <h2 className="font-bold mt-2 overflow-hidden text-ellipsis text-nowrap">{barbershop.NAME}</h2>
+                    <h2 className="font-bold mt-2 overflow-hidden text-ellipsis text-nowrap">{barbershop.name}</h2>
                     <p className="text-sm text-gray-400 overflow-hidden text-ellipsis text-nowrap">{barbershop.address}</p>
                     <Button className="w-full mt-3" variant="secondary" onClick={handleBookingClick}>Reservar</Button>
                 </div>
