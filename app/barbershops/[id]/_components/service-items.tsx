@@ -5,7 +5,7 @@ import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
 import { Barbershop, Service } from "@prisma/client";
-import { ptBR } from "date-fns/locale";
+import { ptBR, se } from "date-fns/locale";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
@@ -13,6 +13,8 @@ import { generateDayTimeList } from "../_helpers/hours";
 import { format, setHours, setMinutes } from "date-fns";
 import { saveBooking } from "../_actions/save-booking";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 
 
@@ -23,16 +25,20 @@ interface ServiceItemProps {
 }
 
 const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps) => {
+    const router = useRouter();
     const {data} = useSession();
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [submitIsLoading, setSubmitIsLoading] = useState(false);
+    const [sheetIsOpen, setSheetIsOpen] = useState(false);
+
 
 
     const handleBookingClick = () => {
         if (!isAuthenticated) {
-            signIn('google');
+            return signIn('google');
         }
-
+        // Se estiver logado, abre a sheet manualmente
+        setSheetIsOpen(true);
     }
 
     const timeList = useMemo(() => {
@@ -72,10 +78,26 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                 barbershopId: barbershop.id,
                 date: newDate,
                 userId: (data.user as any).id,
-
             })
+
+            setSheetIsOpen(false);
+            setDate(undefined);
+            setHour(undefined);
+        
+
+            toast("Reserva realizada com sucesso!",{
+                description: format(newDate, "'Para' dd 'de' MMMM 'às' HH:mm'.'", { locale: ptBR }),
+                duration: 8000,
+                action: {
+                    label: "Visualizar",
+                    onClick: () => router.push("/boo")
+                }
+            })
+            setHour(undefined);
+            setDate(undefined);
+            // toast("Reserva realizada com sucesso!") <-- Você pode adicionar um Toast aqui se quiser
         } catch (error) { 
-            console.log(error)
+            console.error("Erro ao realizar reserva:", error)
         } finally {
             setSubmitIsLoading(false);
         }
@@ -101,7 +123,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                                     currency: "BRL",
                                 }).format(Number(service.price.toString()))}
                             </p>
-                            <Sheet>
+                            <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
                                 <SheetTrigger asChild>
 
                                     <Button variant="secondary" onClick={handleBookingClick}>Reservar</Button>
@@ -191,7 +213,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                                     <SheetFooter className="p-5 border-t border-solid border-secondary">
                                         <Button onClick={handleBookingSubmit} className="w-full" disabled={!date || !hour || submitIsLoading}>
                                             Confirmar reserva
-                                           {submitIsLoading && <Loader2 className="m4-2 h-4 w-4 animate-spin" />}
+                                           {submitIsLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
                                         </Button>
                                     </SheetFooter>
                                 </SheetContent>

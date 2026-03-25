@@ -3,7 +3,6 @@ import { Adapter } from "next-auth/adapters"
 import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/app/lib/prisma"
-import { se } from "date-fns/locale"
 
 export const authOptions: AuthOptions = {
 
