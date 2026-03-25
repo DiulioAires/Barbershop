@@ -53,8 +53,8 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
             const timeHour = Number(time.split(":")[0])
             const timeMinutes = Number(time.split(":")[1])
             const booking = dayBookings.find(booking => {
-            const bookingHour= booking.date.getHours();
-            const bookingMinutes = booking.date.getMinutes();
+            const bookingHour= new Date(booking.date).getHours();
+            const bookingMinutes = new Date(booking.date).getMinutes();
             return bookingHour === timeHour && bookingMinutes === timeMinutes;
             })
 
@@ -71,12 +71,13 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
     useEffect(() => {
 
         const refreshAvaibleHours = async () => {
-            const _dayBookings = await getDayBookings(date);
+           if (!date) return;
+           const _dayBookings = await getDayBookings(barbershop.id, date);
             setDayBookings(_dayBookings)
         }
             refreshAvaibleHours()
         
-    }, [date])
+    }, [date, barbershop.id])
 
  
     
@@ -157,11 +158,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                                 }).format(Number(service.price.toString()))}
                             </p>
                             <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
-                                <SheetTrigger asChild>
-
-                                    <Button variant="secondary" onClick={handleBookingClick}>Reservar</Button>
-
-                                </SheetTrigger>
+                                <Button variant="secondary" onClick={handleBookingClick}>Reservar</Button>
 
 
                                 <SheetContent className="p-0 flex flex-col h-full">
