@@ -5,11 +5,38 @@ import Header from "../_components/header";
 import BarberShopItem from "../_components/barbershop-item";
 import { ptBR } from "date-fns/locale"; //data com local correto
 import { format } from "date-fns"; //adiciona data dinamica
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
 
 export default async function Home() {
 
-  //chamar prisma e pegar barbearias e agendamento para mostrar na tela
-  const barbershops = await db.barbershop.findMany({});
+
+  const session = await getServerSession(authOptions)
+
+
+
+  const [barbershops, confirmedBookings] = await Promise.all ([
+      db.barbershop.findMany({}),
+    session?.user ? db.booking.findMany({
+        where: {
+            userId: (session.user as any).id,
+            date: {
+                gte: new Date(),
+            }
+            
+        },
+        include: {
+            service: true,
+            barbershop: true,
+        },
+    }) 
+
+    : Promise.resolve([]) 
+  ])
+
+ 
+
+
 
   return (
     <div>
@@ -21,22 +48,25 @@ export default async function Home() {
         </p>
       </div>
 
-      <div className="px-5 mt-6">
+      <div className="mt-6">
         <Search />
       </div>
 
 
-      {/* <div className="px-5 mt-3">
-        <h2 className="text-xs uppercase text-gray-400 font-bold mb-3">Agendamentos</h2>
-        <BookingItem />
-      </div> */}
+      <div className="mt-6">
+        <h2 className="text-xs uppercase text-gray-400 font-bold mb-3 pl-5">Agendamentos</h2>
+       <div className=" p-5 flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden"> 
+        {confirmedBookings.map((booking) => (
+          <BookingItem key={booking.id} booking={booking} />
+        ))}</div>
+      </div>
 
 
       <div className="mt-6">
         <h2 className="text-xs uppercase px-5 text-gray-400 font-bold mb-3">Recomendados</h2>
 
 
-        <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden px-5">
+        <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {barbershops.map((barbershop) => (
             <BarberShopItem key={barbershop.id} barbershop={barbershop} />
 
@@ -51,7 +81,7 @@ export default async function Home() {
         <h2 className="text-xs uppercase px-5 text-gray-400 font-bold mb-3">Populares</h2>
 
 
-        <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden  epx-5">
+        <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {barbershops.map((barbershop) => (
             <BarberShopItem key={barbershop.id} barbershop={barbershop} />
 
