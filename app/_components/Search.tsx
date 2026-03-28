@@ -11,13 +11,19 @@ import { useRouter } from "next/navigation";
 const formSchema = z.object({
   search: z.string().trim().min(1, "Campo Obrigatório"),
 });
-const Search = () => {
+
+
+interface SearchProps {
+    defaultValues?: z.infer<typeof formSchema>;
+}
+
+const Search = ({defaultValues}: SearchProps) => {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      search: "",
+      search: defaultValues?.search || "",
     },
   });
 
