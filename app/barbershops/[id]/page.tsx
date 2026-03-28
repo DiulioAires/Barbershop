@@ -2,7 +2,7 @@ import { db } from "@/app/lib/prisma"; // Se der erro aqui ainda, veja a nota ab
 import BarbershopInfo from "./_components/barbershop-info";
 import ServiceItem from "./_components/service-items";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/lib/auth";
 
 
 

@@ -5,8 +5,8 @@ import Header from "../_components/header";
 import BarberShopItem from "../_components/barbershop-item";
 import { ptBR } from "date-fns/locale"; //data com local correto
 import { format } from "date-fns"; //adiciona data dinamica
-import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../lib/auth";
 
 export default async function Home() {
 
