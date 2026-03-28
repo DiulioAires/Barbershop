@@ -33,6 +33,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
     const [submitIsLoading, setSubmitIsLoading] = useState(false);
     const [sheetIsOpen, setSheetIsOpen] = useState(false);
     const [dayBookings, setDayBookings] = useState<Booking[]>([]);
+    const [month, setMonth] = useState<Date>(new Date());
 
    
     
@@ -85,6 +86,9 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
     const handleDateClick = (date: Date | undefined) => {
         setDate(date)
         setHour(undefined)
+        if (date) {
+            setMonth(date)
+        }
     }
 
 
@@ -117,6 +121,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
             setSheetIsOpen(false);
             setDate(undefined);
             setHour(undefined);
+            setMonth(new Date());
         
 
             toast("Reserva realizada com sucesso!",{
@@ -175,6 +180,8 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                                             className="px-2 w-full"
                                             disabled={{ before: new Date() }}
                                             locale={ptBR}
+                                            month={month}
+                                            onMonthChange={setMonth}
                                             classNames={{
                                                 month: "flex w-full flex-col",
                                                 table: "w-full border-collapse space-y-1",
