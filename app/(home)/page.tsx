@@ -69,7 +69,13 @@ export default async function Home() {
         
         <div className=" p-5 flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden"> 
         {confirmedBookings.map((booking: Prisma.BookingGetPayload<{ include: { service: true; barbershop: true } }>) => (
-          <BookingItem key={booking.id} booking={booking} />
+          <BookingItem key={booking.id} booking={{
+            ...booking,
+            service: {
+              ...booking.service,
+              price: Number(booking.service.price),
+            }
+          } as any} />
         ))}</div>
         
         </>
