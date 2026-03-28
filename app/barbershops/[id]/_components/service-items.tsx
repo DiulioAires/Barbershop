@@ -10,7 +10,7 @@ import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import { use, useEffect, useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
-import { format, setHours, setMinutes } from "date-fns";
+import { addDays, format, setHours, setMinutes } from "date-fns";
 import { saveBooking } from "../_actions/save-booking";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";

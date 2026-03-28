@@ -116,8 +116,8 @@ const BookingItem = ({ booking }: BookingItemProps) => {
                                     <Avatar className="w-[40px] h-[40px]">
                                         <AvatarImage src={booking.barbershop.imageUrl} />
                                     </Avatar>
-                                    <div>
-                                        <h2 className="font-bold">{booking.barbershop.name}</h2>
+                                    <div className="overflow-hidden flex-1">
+                                        <h2 className="font-bold truncate">{booking.barbershop.name}</h2>
                                         <h3 className="text-xs overflow-hidden text-nowrap text-ellipsis">{booking.barbershop.address}</h3>
                                     </div>
                                 </CardContent>
@@ -167,16 +167,15 @@ const BookingItem = ({ booking }: BookingItemProps) => {
 
                     <SheetFooter className="grid grid-cols-2 gap-3 mt-6">
                         <SheetClose asChild>
-                            <Button variant="secondary" className="w-full p-5 ">
+                            <Button variant="secondary" className="w-full">
                                 Voltar
                             </Button >
                         </SheetClose>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
 
-                                <Button  disabled={!isBookingConfirmed || isDeleteLoading} variant="destructive"
-                                    className="w-full p-5">
-                                    Cancelar Reserva
+                                <Button  disabled={!isBookingConfirmed || isDeleteLoading} variant="destructive" className="w-full">
+                                    Cancelar
                                 </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent className="w-[90%]">
@@ -188,10 +187,10 @@ const BookingItem = ({ booking }: BookingItemProps) => {
                                 </AlertDialogHeader>
                                 <AlertDialogFooter className="flex-row grid grid-cols-2 gap-3">
                                     <AlertDialogCancel className="w-full mt-0">Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction  disabled={!isBookingConfirmed || isDeleteLoading} className="w-full on" onClick={handleCancelClick}>
-                                        {isDeleteLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-
-                                        Confirmar
+                                    <AlertDialogAction  disabled={!isBookingConfirmed || isDeleteLoading} className="w-full" onClick={handleCancelClick}>
+                                        {isDeleteLoading ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : "Confirmar"}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
