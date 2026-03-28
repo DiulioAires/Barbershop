@@ -7,7 +7,7 @@ import { ptBR } from "date-fns/locale"; //data com local correto
 import { format } from "date-fns"; //adiciona data dinamica
 import { getServerSession } from "next-auth";
 import { authOptions } from "../lib/auth";
-import { Booking } from "@prisma/client"
+import { Prisma } from "@prisma/client"
 
 
 export default async function Home() {
@@ -64,7 +64,7 @@ export default async function Home() {
         <h2 className="text-xs uppercase text-gray-400 font-bold mb-3 pl-5">Agendamentos</h2>
         
         <div className=" p-5 flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden"> 
-        {confirmedBookings.map((booking: any) => (
+        {confirmedBookings.map((booking: Prisma.BookingGetPayload<{ include: { service: true; barbershop: true } }>) => (
           <BookingItem key={booking.id} booking={booking} />
         ))}</div>
         
