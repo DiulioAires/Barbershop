@@ -1,6 +1,7 @@
 import { db } from "../lib/prisma";
 import Header from "../_components/header";
 import BarbershopItem from "../_components/barbershop-item";
+import { redirect } from "next/navigation";
 interface BarbershopsPageProps {
     searchParams: Promise<{
         search?: string;
@@ -8,6 +9,11 @@ interface BarbershopsPageProps {
 }
 
 const BarbershopsPage = async ({ searchParams }: BarbershopsPageProps) => {
+    
+    if(!(await searchParams).search) {
+        return redirect("/")
+    }
+    
     const params = await searchParams;
 
     const barbershops = await db.barbershop.findMany({
